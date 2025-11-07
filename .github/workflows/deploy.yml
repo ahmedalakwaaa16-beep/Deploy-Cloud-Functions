@@ -3,23 +3,31 @@ name: Deploy Firebase Cloud Functions
 on:
   push:
     branches:
-      - main  # or master if your repo uses master
+      - main
+  workflow_dispatch:
 
 jobs:
-  build_and_deploy:
+  deploy:
+    name: Deploy Functions to Firebase
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # Step 1 - Checkout your code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # Step 2 - Set up Node.js (Cloud Functions use Node)
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
-      - name: Install Firebase Tools
+      # Step 3 - Install Firebase CLI
+      - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
+      # Step 4 - Deploy using FIREBASE_TOKEN
       - name: Deploy to Firebase
-      - run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          firebase use fazaa-pro2-a3e12 --token "${{ secrets.FIREBASE_TOKEN }}"
+          firebase deploy --only functions --token "${{ secrets.FIREBASE_TOKEN }}"
